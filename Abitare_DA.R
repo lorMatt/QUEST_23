@@ -64,7 +64,7 @@ abPlotProv |>
   geom_point(size = 4, colour = 'white') +
   labs(title = 'Indice di soddisfazione con la condizione abitativa',
        subtitle = 'Scomposizione per province') + 
-  geom_hline(yintercept = 61.87752, colour = 'gray70', size = 0.3) +
+  geom_hline(yintercept = abPlotProv$ovmean[1], colour = 'gray70', size = 0.3) +
   scale_y_continuous(n.breaks = 4) +
   scale_color_met_d('Degas') +
   coord_flip() +
@@ -75,10 +75,11 @@ abPlotProv |>
         plot.subtitle = element_text(hjust = .5, size = 15),
         axis.text.y = element_text(size = 11))
 
-ggsave('img/abProv.jpeg', width = 8, height = 7)
+ggsave('img/abProv.png', width = 8, height = 7)
 
 ## Index by urban zone
 abPlotZon <- Abitare |> 
+  filter(prov_dom == 'Terni' | prov_dom == 'Perugia') |> 
   group_by(zon) |>
   summarise(meanzon = mean(abInd)) |> 
   mutate(ovmean = mean(meanzon),
@@ -92,7 +93,7 @@ ggPlotZon <- abPlotZon |>
   geom_segment_interactive(aes(y = ovmean, yend = meanzon, x = zon, xend = zon)) +
   geom_point(size = 4, colour = 'white') +
   scale_y_continuous(n.breaks = 4) +
-  geom_hline(yintercept = 60.33645, colour = 'gray70', size = 0.3) +
+  geom_hline(yintercept = abPlotZon$ovmean[1], colour = 'gray70', size = 0.3) +
   scale_color_met_d('Degas') +
   coord_flip() +
   labs(title = 'Indice di soddisfazione con la condizione abitativa',
@@ -104,7 +105,7 @@ ggPlotZon <- abPlotZon |>
         plot.subtitle = element_text(hjust = .5, size = 15),
         axis.text.y = element_text(size = 11))
 
-ggsave('img/abZon.jpeg', width = 8, height = 5)
+ggsave('img/abZon.png', width = 8, height = 5)
 
 ### Interactive graph
 girafe(ggobj = ggPlotZon,
@@ -121,4 +122,38 @@ girafe(ggobj = ggPlotZon,
                       use_cursor_pos = T),
          opts_toolbar(position = 'bottomright')))
 
+### Index by urban zone - over occ
+abPlotDem <- left_join(Lavorare |> 
+                  select(id, occ, gen),
+                Abitare) |> mutate(occ = gsub((' (inclusi contratti a nero, precari,  di ricerca, stage, servizio civile)'), '', occ, fixed = T),
+                                   occ = gsub((' (inclusi contratti a nero, precari, di ricerca, stage, servizio civile)'), '', occ, fixed = T))
 
+abPlotDem <- abPlotDem |> 
+  filter(prov_dom == 'Terni' | prov_dom == 'Perugia') |> 
+  group_by(zon, occ) |> 
+  summarise(meanzon = mean(abInd)) |> 
+  group_by(occ) |> 
+  mutate(ovmean = mean(meanzon),
+         flag = ifelse(meanzon > ovmean, T, F),
+         zon = factor(zon,
+                      levels = zon[order(meanzon)]))
+
+abPlotDem |> 
+  ggplot(aes(x = zon, y = meanzon, colour = flag, data_id = zon, tooltip = round(meanzon, 2))) +
+  geom_point_interactive(size = 6) +
+  geom_segment_interactive(aes(y = ovmean, yend = meanzon, x = zon, xend = zon)) +
+  geom_point(size = 4, colour = 'white') +
+  scale_y_continuous(n.breaks = 4) +
+  scale_color_met_d('Degas') +
+  coord_flip() +
+  labs(title = 'Indice di soddisfazione con la condizione abitativa',
+       subtitle = 'Scomposizione per tipo di insediamento') + 
+  facet_wrap(~occ, scales = 'free') +
+  theme_minimal() +
+  theme(axis.title = element_blank(),
+        legend.position = 'none',
+        plot.title = element_text(hjust = .5, size = 20),
+        plot.subtitle = element_text(hjust = .5, size = 15),
+        axis.text.y = element_text(size = 11))
+
+ggsave('img/abPlotDem.png', width = 13, height = 10)

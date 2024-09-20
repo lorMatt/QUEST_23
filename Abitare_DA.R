@@ -1,5 +1,5 @@
 if (!require("pacman")) install.packages("pacman"); library(pacman)
-p_load('tidyverse', 'ggiraph', 'ggplot2', 'readxl', 'gt')
+p_load('tidyverse', 'ggiraph', 'ggplot2', 'readxl', 'gt', 'MetBrewer')
 
 # Data management --------------------------------------------------------------
 ## Import data
@@ -59,16 +59,23 @@ abPlotProv <- Abitare |>
 
 abPlotProv |> 
   ggplot(aes(x = prov_dom, y = meanprov, colour = flag)) +
-  geom_point() +
-  coord_flip() +
+  geom_point(size = 6) +
   geom_segment(aes(y = ovmean, yend = meanprov, x = prov_dom, xend = prov_dom)) +
-  theme_minimal() +
+  geom_point(size = 4, colour = 'white') +
   labs(title = 'Indice di soddisfazione con la condizione abitativa',
        subtitle = 'Scomposizione per province') + 
+  geom_hline(yintercept = 61.87752, colour = 'gray70', size = 0.3) +
+  scale_y_continuous(n.breaks = 4) +
+  scale_color_met_d('Degas') +
+  coord_flip() +
+  theme_minimal() +
   theme(axis.title = element_blank(),
-        legend.position = 'none')
+        legend.position = 'none',
+        plot.title = element_text(hjust = .5, size = 20),
+        plot.subtitle = element_text(hjust = .5, size = 15),
+        axis.text.y = element_text(size = 11))
 
-ggsave('img/abProv.jpeg', width = 6, height = 7)
+ggsave('img/abProv.jpeg', width = 8, height = 7)
 
 ## Index by urban zone
 abPlotZon <- Abitare |> 
@@ -86,6 +93,7 @@ ggPlotZon <- abPlotZon |>
   geom_point(size = 4, colour = 'white') +
   scale_y_continuous(n.breaks = 4) +
   geom_hline(yintercept = 60.33645, colour = 'gray70', size = 0.3) +
+  scale_color_met_d('Degas') +
   coord_flip() +
   labs(title = 'Indice di soddisfazione con la condizione abitativa',
        subtitle = 'Scomposizione per tipo di insediamento') + 

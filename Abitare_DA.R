@@ -1,5 +1,5 @@
 if (!require("pacman")) install.packages("pacman"); library(pacman)
-p_load('tidyverse', 'plotly', 'ggplot2', 'readxl', 'gt')
+p_load('tidyverse', 'ggiraph', 'ggplot2', 'readxl', 'gt')
 
 # Data management --------------------------------------------------------------
 ## Import data
@@ -79,15 +79,38 @@ abPlotZon <- Abitare |>
          zon = factor(zon,
                            levels = zon[order(meanzon)]))
 
-abPlotZon |> 
-  ggplot(aes(x = zon, y = meanzon, colour = flag)) +
-  geom_point() +
+ggPlotZon <- abPlotZon |> 
+  ggplot(aes(x = zon, y = meanzon, colour = flag, data_id = zon, tooltip = round(meanzon, 2))) +
+  geom_point_interactive(size = 6) +
+  geom_segment_interactive(aes(y = ovmean, yend = meanzon, x = zon, xend = zon)) +
+  geom_point(size = 4, colour = 'white') +
+  scale_y_continuous(n.breaks = 4) +
+  geom_hline(yintercept = 60.33645, colour = 'gray70', size = 0.3) +
   coord_flip() +
-  geom_segment(aes(y = ovmean, yend = meanzon, x = zon, xend = zon)) +
-  theme_minimal() +
   labs(title = 'Indice di soddisfazione con la condizione abitativa',
        subtitle = 'Scomposizione per tipo di insediamento') + 
+  theme_minimal() +
   theme(axis.title = element_blank(),
-        legend.position = 'none')
+        legend.position = 'none',
+        plot.title = element_text(hjust = .5, size = 20),
+        plot.subtitle = element_text(hjust = .5, size = 15),
+        axis.text.y = element_text(size = 11))
 
-ggsave('img/abZon.jpeg', width = 6, height = 7)
+ggsave('img/abZon.jpeg', width = 8, height = 5)
+
+### Interactive graph
+girafe(ggobj = ggPlotZon,
+       width_svg = 8,
+       options = list(
+         opts_hover(css = ''), ## CSS code of line we're hovering over
+         opts_hover_inv(css = "opacity:0.3;"), ## CSS code of all other lines
+         opts_tooltip(css = "background-color:white;
+                      color:black;
+                      font-family:Helvetica;
+                      font-style:empty;
+                      padding:8px;
+                      border-radius:10px;",
+                      use_cursor_pos = T),
+         opts_toolbar(position = 'bottomright')))
+
+

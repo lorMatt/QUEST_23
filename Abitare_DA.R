@@ -4,7 +4,9 @@ p_load('tidyverse', 'ggiraph', 'ggplot2', 'readxl', 'gt', 'MetBrewer')
 # Data management --------------------------------------------------------------
 ## Import data
 Abitare <- read_excel("QUEST_DEF.xlsx", 
-                      sheet = "Abitare", skip = 1) |> 
+                      sheet = "Abitare", skip = 1)
+Lavorare <- read_excel("QUEST_DEF.xlsx", 
+                       sheet = "Lavorare", skip = 1)
 geoCod <- read_excel("Codici-statistici-e-denominazioni-al-30_06_2024.xlsx")
 
 ## Data cleaning/wrangling -----------------------------------------------------
@@ -157,3 +159,4 @@ abPlotDem |>
         axis.text.y = element_text(size = 11))
 
 ggsave('img/abPlotDem.png', width = 13, height = 10)
+

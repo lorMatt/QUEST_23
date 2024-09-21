@@ -5,7 +5,7 @@ p_load('tidyverse', 'ggiraph', 'ggplot2', 'readxl', 'gt', 'MetBrewer', 'sf')
 ## Import data 
 Lavorare <- read_excel("QUEST_DEF.xlsx", 
                        sheet = "Lavorare", skip = 1) |> 
-            |> filter(id < 256)
+            filter(id < 256)
 Abitare <- read_excel("QUEST_DEF.xlsx",
                       sheet = "Abitare", skip = 1) |> 
             filter(id < 256)
@@ -160,4 +160,3 @@ df |>
         plot.title = element_text(hjust = .5, size = 18))
 
 ggsave('img/etaGenOccPlot.png', width = 13, height = 10)
-

@@ -16,11 +16,11 @@ Lavorare <- read_excel("QUEST_DEF.xlsx",
 ## Data wrangling/cleaning -----------------------------------------------------
 
 ### rest factor 
-restRecode <- function(x) {case_match(paste(x),
-                                      'Per nulla' ~ 1,
-                                      'Poco' ~ 2,
-                                      'Abbastanza' ~ 3,
-                                      'Molto' ~ 4
+restRecode <- function(x) {factor(paste(x), levels = c(
+                                      'Per nulla',
+                                      'Poco',
+                                      'Abbastanza',
+                                      'Molto')
 )}
 Restare <- Restare |> 
   mutate(across(names(Restare[startsWith(names(Restare),"rest")]),
@@ -86,7 +86,10 @@ ggsave('img/attRest.png', width = 5, height = 8, device = png)
 
 ### graphics df
 #### counting each column
-rest <- tibble(.rows = 4, choice = c('Abbastanza', 'Molto', 'Per nulla', 'Poco'))
+rest <- tibble(.rows = 4, choice = c('Per nulla',
+                                     'Poco',
+                                     'Abbastanza',
+                                     'Molto'))
 for (i in 1:10) {
 vec <- Restare[startsWith(names(Restare),"rest")] |> 
     group_by(Restare[startsWith(names(Restare),"rest")][i]) |>
@@ -94,7 +97,7 @@ vec <- Restare[startsWith(names(Restare),"rest")] |>
     count(name = paste(names(Restare[startsWith(names(Restare),"rest")][i]), '_n')) |> 
     rename('choice' = names(Restare[startsWith(names(Restare),"rest")][i]))
 
-rest <- full_join(rest, vec)
+rest <- full_join(rest, vec |> mutate(choice = choice))
 
 }
 rm(i)
@@ -168,7 +171,6 @@ lasc <- rownames_to_column(lasc2) |>
 
 rm(lasc2)
 
-table(Restare$lascImp, useNA = 'always')
 lasc <- lasc |> 
   mutate(index = round(((Abbastanza + Molto)/166)*100, 2)) # % di abbastanza + molto importante
 

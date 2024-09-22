@@ -28,9 +28,14 @@ Restare <- Restare |>
 Restare <- Restare |> 
   mutate(across(names(Restare[startsWith(names(Restare),"lasc")]),
                 restRecode))
+limRecode <- function(x) {factor(paste(x), levels = c('Difficilmente lo accetterei',
+                                                      'È inaccettabile',
+                                                      'L\'ho accettato',
+                                                      'Potrei accettarlo')
+)}
 Restare <- Restare |> 
   mutate(across(names(Restare[startsWith(names(Restare),"lim")]),
-                restRecode))
+                limRecode))
 
 ### Rapporto con il luogo di residenza, recode + factor
 Restare <- Restare |> 
@@ -203,5 +208,71 @@ lasc |>
         legend.position = 'right',
         legend.title = element_blank(),
         plot.title = element_text(size = 20, hjust = .5))
+ggsave('img/motLasc.png', width = 7, height = 5)
+
+## Limiti a restare ------------------------------------------------------------
+
+### graphics df
+#### counting each column
+lim <- tibble(.rows = 4, choice = c('Difficilmente lo accetterei',
+                                    'È inaccettabile',
+                                    'L\'ho accettato',
+                                    'Potrei accettarlo'))
+for (i in 1:11) {
+  vec <- Restare[startsWith(names(Restare),"lim")] |> 
+    group_by(Restare[startsWith(names(Restare),"lim")][i]) |>
+    drop_na() |> 
+    count(name = paste(names(Restare[startsWith(names(Restare),"lim")][i]), '_n')) |> 
+    rename('choice' = names(Restare[startsWith(names(Restare),"lim")][i]))
+  
+  lim <- full_join(lim, vec)
+  
+}
+rm(i)
+#### data wrangling
+lim2 <- data.frame(t(lim[-1])) # swapping columns-rows
+colnames(lim2) <-  lim$choice
+
+lim <- rownames_to_column(lim2) |>
+  mutate(rowname = gsub('_n', '', rowname)) |> # column 
+  rename(choice = rowname)
+
+rm(lim2)
+
+lim <- lim |> 
+  mutate(index = round(((`Difficilmente lo accetterei` + `È inaccettabile`)/255)*100, 2)) # % di abbastanza + molto importante
+
+### graphics
+labels<-data.frame(
+  y = c(25,50,75,100),
+  x = rep(0.25,4)
+)
+lim |> 
+  mutate(choice = case_match(choice,
+                             'limSpost '~ 'Traspoirti/viaggi difficili e costosi',
+                             'limRec '	~ 'Scarsi servizi per il tempo libero',
+                             'limConn '	~ 'Problemi di connettività',
+                             'limForm '	~ 'Minore offerta formativa',
+                             'limOcc '  ~ 'Minori opportunità lavorative',
+                             'limCarr '	~ 'Minori opportunità di avanzamento di carriera',
+                             'limSal '  ~ 'Stipendio inferiore',
+                             'limQual '	~ 'Lavorare al di sotto della propria qualifica',
+                             'limAb '	  ~ 'Alloggi non soddisfacenti',
+                             'limSan '  ~ 'Sanità lontana, inefficiente, costosa',
+                             'limCom '  ~ 'Esclusione dalla comunità per le proprie scelte'
+  )) |> 
+  ggplot(aes(x = choice, y = index, fill = choice)) +
+  geom_col() +
+  coord_polar() +
+  scale_y_continuous(limits = c(0, 95)) +
+  labs(title = 'Limiti a rimanere',
+       subtitle = 'Indice assegnato per numerosità') +
+  scale_fill_manual(values = met.brewer('Tiepolo', 11)) +
+  theme_void() +
+  theme(axis.title = element_blank(),
+        legend.position = 'right',
+        legend.title = element_blank(),
+        plot.title = element_text(size = 20, hjust = .5),
+        plot.subtitle = element_text(size = 12, hjust = .5))
 ggsave('img/motLasc.png', width = 7, height = 5)
 

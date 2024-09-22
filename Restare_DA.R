@@ -274,5 +274,5 @@ lim |>
         legend.title = element_blank(),
         plot.title = element_text(size = 20, hjust = .5),
         plot.subtitle = element_text(size = 12, hjust = .5))
-ggsave('img/motLasc.png', width = 7, height = 5)
+ggsave('img/limRest.png', width = 7, height = 5)
 

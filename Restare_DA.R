@@ -120,10 +120,6 @@ rest <- rest |>
   mutate(index = round(((Abbastanza + Molto)/89)*100, 2)) # % di abbastanza + molto importante
 
 ### graphics
-labels<-data.frame(
-  y = c(25,50,75,100),
-  x = rep(0.25,4)
-)
 rest |> 
   filter(choice != 'restFort ') |> 
   mutate(choice = case_match(choice,
@@ -180,10 +176,6 @@ lasc <- lasc |>
   mutate(index = round(((Abbastanza + Molto)/166)*100, 2)) # % di abbastanza + molto importante
 
 ### graphics
-labels<-data.frame(
-  y = c(25,50,75,100),
-  x = rep(0.25,4)
-)
 lasc |> 
   mutate(choice = case_match(choice,
                              'lascEsp '	~ 'Ampliare i propri orizzonti',
@@ -243,10 +235,6 @@ lim <- lim |>
   mutate(index = round(((`Difficilmente lo accetterei` + `È inaccettabile`)/255)*100, 2)) # % di abbastanza + molto importante
 
 ### graphics
-labels<-data.frame(
-  y = c(25,50,75,100),
-  x = rep(0.25,4)
-)
 lim |> 
   mutate(choice = case_match(choice,
                              'limSpost '~ 'Traspoirti/viaggi difficili e costosi',
@@ -274,5 +262,5 @@ lim |>
         legend.title = element_blank(),
         plot.title = element_text(size = 20, hjust = .5),
         plot.subtitle = element_text(size = 12, hjust = .5))
-ggsave('img/limRest.pdf', width = 7, height = 5)
+ggsave('img/limRest.pdf', width = 8, height = 5)
 

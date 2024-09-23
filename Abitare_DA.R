@@ -4,9 +4,11 @@ p_load('tidyverse', 'ggiraph', 'ggplot2', 'readxl', 'gt', 'MetBrewer')
 # Data management --------------------------------------------------------------
 ## Import data
 Abitare <- read_excel("QUEST_DEF.xlsx", 
-                      sheet = "Abitare", skip = 1)
+                      sheet = "Abitare", skip = 1) |> 
+  filter(eta <= 35)
 Lavorare <- read_excel("QUEST_DEF.xlsx", 
-                       sheet = "Lavorare", skip = 1)
+                       sheet = "Lavorare", skip = 1) |> 
+  filter(eta <= 35)
 geoCod <- read_excel("Codici-statistici-e-denominazioni-al-30_06_2024.xlsx")
 
 ## Data cleaning/wrangling -----------------------------------------------------
@@ -77,7 +79,7 @@ abPlotProv |>
         plot.subtitle = element_text(hjust = .5, size = 15),
         axis.text.y = element_text(size = 11))
 
-ggsave('img/abProv.png', width = 8, height = 7)
+ggsave('img/abProv.pdf', width = 8, height = 7)
 
 ## Index by urban zone
 abPlotZon <- Abitare |> 
@@ -107,7 +109,7 @@ ggPlotZon <- abPlotZon |>
         plot.subtitle = element_text(hjust = .5, size = 15),
         axis.text.y = element_text(size = 11))
 
-ggsave('img/abZon.png', width = 8, height = 5)
+ggsave('img/abZon.pdf', width = 8, height = 5)
 
 ### Interactive graph
 girafe(ggobj = ggPlotZon,
@@ -158,5 +160,5 @@ abPlotDem |>
         plot.subtitle = element_text(hjust = .5, size = 15),
         axis.text.y = element_text(size = 11))
 
-ggsave('img/abPlotDem.png', width = 13, height = 10)
+ggsave('img/abPlotDem.pdf', width = 13, height = 10)
 

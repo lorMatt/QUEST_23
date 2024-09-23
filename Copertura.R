@@ -5,10 +5,10 @@ p_load('tidyverse', 'ggiraph', 'ggplot2', 'readxl', 'gt', 'MetBrewer', 'sf')
 ## Import data 
 Lavorare <- read_excel("QUEST_DEF.xlsx", 
                        sheet = "Lavorare", skip = 1) |> 
-            filter(id < 256)
+  filter(eta <= 35)
 Abitare <- read_excel("QUEST_DEF.xlsx",
                       sheet = "Abitare", skip = 1) |> 
-            filter(id < 256)
+  filter(eta <= 35)
 geoCod <- read_excel("Codici-statistici-e-denominazioni-al-30_06_2024.xlsx")
 sf <- read_sf('geoData/ISTAT - confini amministrativi/Com01012024_g/Com01012024_g_WGS84.shp')
 umbriasf <- read_sf('geoData/ISTAT - confini amministrativi/ProvCM01012024_g/ProvCM01012024_g_WGS84.shp') |> 
@@ -78,7 +78,7 @@ ggdom <- domdf |>
   theme(legend.position = 'none',
         plot.title = element_text(family = 'Helvetica', hjust = .5, size = 20))
 
-ggsave('img/mapCop.png', plot = ggdom, width = 8, height = 9)
+ggsave('img/mapCop.pdf', plot = ggdom, width = 8, height = 9)
 
 ### Interactive
 
@@ -114,7 +114,7 @@ df |>
         strip.text = element_text(size = 15),
         axis.text = element_text(size = 11))
 
-ggsave('img/univPlot.png', width = 13, height = 7.5)
+ggsave('img/univPlot.pdf', width = 13, height = 7.5)
 
 ## Bivariate       
 ### Età/occ
@@ -129,7 +129,7 @@ df |>
         legend.position = 'bottom',
         axis.title = element_blank(),
         plot.title = element_text(hjust = .5, size = 18))
-ggsave('img/etaOccPlot.png', width = 8, height = 7.5)
+ggsave('img/etaOccPlot.pdf', width = 8, height = 7.5)
 
 ### Età/gen
 df |> 
@@ -143,7 +143,7 @@ df |>
         legend.position = 'bottom',
         axis.title = element_blank(),
         plot.title = element_text(hjust = .5, size = 18))
-ggsave('img/etaGenPlot.png', width = 8, height = 7.5)
+ggsave('img/etaGenPlot.pdf', width = 8, height = 7.5)
 
 ### Genere/età/occ
 df |> 
@@ -159,4 +159,4 @@ df |>
         strip.text = element_text(size = 15),
         plot.title = element_text(hjust = .5, size = 18))
 
-ggsave('img/etaGenOccPlot.png', width = 13, height = 10)
+ggsave('img/etaGenOccPlot.pdf', width = 13, height = 10)

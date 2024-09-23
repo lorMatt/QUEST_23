@@ -10,9 +10,11 @@ font_import (path ="~/Documents/Progetti/RxR/Osservatorio/Data Analysis/QUEST_23
 ## Data import -----------------------------------------------------------------
 
 Restare <- read_excel("QUEST_DEF.xlsx", 
-                      sheet = "Restare", skip = 1)
+                      sheet = "Restare", skip = 1) |> 
+  filter(eta <= 35)
 Lavorare <- read_excel("QUEST_DEF.xlsx", 
-                                   sheet = "Lavorare", skip = 1)
+                                   sheet = "Lavorare", skip = 1) |> 
+  filter(eta <= 35)
 ## Data wrangling/cleaning -----------------------------------------------------
 
 ### rest factor 
@@ -72,10 +74,8 @@ Restare |>
   group_by(rapp, occ) |> 
   count() |> 
   ggplot(aes(values = n, label = rapp, colour = rapp)) +
-  geom_pictogram(make_proportional = T, flip = T, size = 6) +
-  scale_label_pictogram(
-    values = c("user")
-    ) +
+  geom_pictogram(make_proportional = T, radius = unit(.5, "npc"), flip = T, size = 5) +
+  scale_label_pictogram(values = 'circle') +
   scale_color_manual(values = met.brewer('Tiepolo', 4)) +
   facet_wrap(~occ) +
   labs(title = 'Attitudine al restare') +
@@ -86,7 +86,7 @@ Restare |>
         strip.text = element_text(size = 12),
         plot.title = element_text(size = 20, hjust = .5))
 
-ggsave('img/attRest.png', width = 5, height = 8, device = png)
+ggsave('img/attRest.pdf', width = 5, height = 8, device = pdf)
 ## Motivi per restare ----------------------------------------------------------
 
 ### graphics df
@@ -148,7 +148,7 @@ rest |>
         legend.position = 'right',
         legend.title = element_blank(),
         plot.title = element_text(size = 20, hjust = .5))
-ggsave('img/motRest.png', width = 7, height = 5)
+ggsave('img/motRest.pdf', width = 7, height = 5)
 
 ## Motivi per lasciare ---------------------------------------------------------
 
@@ -208,7 +208,7 @@ lasc |>
         legend.position = 'right',
         legend.title = element_blank(),
         plot.title = element_text(size = 20, hjust = .5))
-ggsave('img/motLasc.png', width = 7, height = 5)
+ggsave('img/motLasc.pdf', width = 7, height = 5)
 
 ## Limiti a restare ------------------------------------------------------------
 
@@ -274,5 +274,5 @@ lim |>
         legend.title = element_blank(),
         plot.title = element_text(size = 20, hjust = .5),
         plot.subtitle = element_text(size = 12, hjust = .5))
-ggsave('img/limRest.png', width = 7, height = 5)
+ggsave('img/limRest.pdf', width = 7, height = 5)
 

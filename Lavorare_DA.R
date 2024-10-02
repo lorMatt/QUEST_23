@@ -21,7 +21,6 @@ Lavorare <- Lavorare |>
                 lavRecode))
 
 # Dataviz ----
-
 ## Future risks
 risc <- tibble(.rows = 4, choice = c('Per nulla',
                                      'Poco',

@@ -30,7 +30,7 @@ risc <- tibble(.rows = 4, choice = c('Per nulla',
 for (i in 1:6) {
   vec <- Lavorare[startsWith(names(Lavorare),"risc")] |> 
     group_by(Lavorare[startsWith(names(Lavorare),"risc")][i]) |>
-    drop_na() |> 
+    drop_na() |>
     count(name = paste(names(Lavorare[startsWith(names(Lavorare),"risc")][i]), '_n')) |> 
     rename('choice' = names(Lavorare[startsWith(names(Lavorare),"risc")][i]))
   
@@ -76,8 +76,10 @@ ggsave('img/riscLav.pdf', width = 7, height = 5)
 
 ## Ambitions
 Lavorare |> 
-  ggplot(aes(y = aspiraz)) +
-  geom_bar() +
+  count(aspiraz) |> 
+  arrange(n) |> 
+  ggplot(aes(y= reorder(aspiraz, n), x = n)) +
+  geom_col() +
   theme_minimal() +
   labs(title = 'Aspirazioni per il futuro') +
   theme(axis.title = element_blank())

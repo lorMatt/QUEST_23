@@ -161,4 +161,3 @@ abPlotDem |>
         axis.text.y = element_text(size = 11))
 
 ggsave('img/abPlotDem.pdf', width = 13, height = 10)
-

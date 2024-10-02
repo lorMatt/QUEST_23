@@ -60,4 +60,4 @@ studPlotEdu |>
         plot.subtitle = element_text(hjust = .5, size = 15),
         axis.text.y = element_text(size = 11))
 
-ggsave('img/studSoddEdu.pdf', width = 8, height = 7)
+ggsave('img/studSoddEdu.pdf', width = 8, height = 3.5)

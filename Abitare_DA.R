@@ -50,7 +50,7 @@ Abitare <- Abitare |>
   rename(prov_dom = prov)
 
 # Dataviz ----------------------------------------------------------------------
-## Index by province
+## Index by province ----
 abPlotProv <- Abitare |> 
   group_by(prov_dom) |>
   summarise(meanprov = mean(abInd)) |> 
@@ -81,7 +81,7 @@ abPlotProv |>
 
 ggsave('img/abProv.pdf', width = 8, height = 7)
 
-## Index by urban zone
+## Index by urban zone ----
 abPlotZon <- Abitare |> 
   filter(prov_dom == 'Terni' | prov_dom == 'Perugia') |> 
   group_by(zon) |>
@@ -125,6 +125,85 @@ girafe(ggobj = ggPlotZon,
                       border-radius:10px;",
                       use_cursor_pos = T),
          opts_toolbar(position = 'bottomright')))
+
+### Unpacking abInd for city centre ----
+Abitare |> 
+  drop_na(abInd) |> 
+  filter(zon == 'Centro Cittadino') |> 
+  select(abQual, abCost, abPriv, abVic, abColl) |> 
+  pivot_longer(c(abQual, abCost, abPriv, abVic, abColl), names_to = 'abSodd', values_to = 'value') |> 
+  mutate(abInd = (value-1)/3 * 100) |> 
+  group_by(abSodd) |> 
+  summarise(abInd = mean(abInd)) |> 
+  mutate(abSodd = case_match(abSodd,
+                               'abQual'  ~ 'Qualità dell\'immobile (luminosità, dimensioni, riscaldamento)',
+                               'abCost'  ~ 'Costi da sostenere (per te o la tua famiglia)',
+                               'abPriv'  ~ 'Privacy garantita',
+                               'abVic'   ~ 'Vicinanza al centro/ai tuoi interessi',
+                               'abColl'  ~ 'Collegamento a zone di interesse con servizio di mobilità pubblica'
+  )) |> 
+  ggplot(aes(x = reorder(abSodd, -abInd), y = abInd, fill = abInd)) +
+  scale_fill_gradient2(high = '#EFD953', mid = '#EFD953',  midpoint = 70, low = '#EF7D4D') +
+  coord_flip() +
+  scale_y_continuous(limits = c(0, 80)) +
+  geom_col(width = .3, show.legend = F) +
+  theme_minimal() +
+  theme(axis.title = element_blank())
+
+ggsave('img/abSoddCent.pdf', width = 8, height = 3)
+
+### Unpacking abInd for outskirts ----
+Abitare |> 
+  drop_na(abInd) |> 
+  filter(zon == 'Periferia') |> 
+  select(abQual, abCost, abPriv, abVic, abColl) |> 
+  pivot_longer(c(abQual, abCost, abPriv, abVic, abColl), names_to = 'abSodd', values_to = 'value') |> 
+  mutate(abInd = (value-1)/3 * 100) |> 
+  group_by(abSodd) |> 
+  summarise(abInd = mean(abInd)) |> 
+  mutate(abSodd = case_match(abSodd,
+                             'abQual'  ~ 'Qualità dell\'immobile (luminosità, dimensioni, riscaldamento)',
+                             'abCost'  ~ 'Costi da sostenere (per te o la tua famiglia)',
+                             'abPriv'  ~ 'Privacy garantita',
+                             'abVic'   ~ 'Vicinanza al centro/ai tuoi interessi',
+                             'abColl'  ~ 'Collegamento a zone di interesse con servizio di mobilità pubblica'
+  )) |> 
+  ggplot(aes(x = reorder(abSodd, -abInd), y = abInd, fill = abInd)) +
+  scale_fill_gradient2(high = '#EFD953', mid = '#EFD953',  midpoint = 70, low = '#EF7D4D') +
+  coord_flip() +
+  scale_y_continuous(limits = c(0, 80)) +
+  geom_col(width = .3, show.legend = F) +
+  theme_minimal() +
+  theme(axis.title = element_blank())
+
+ggsave('img/abSoddPer.pdf', width = 8, height = 3)
+
+### Unpacking abInd for rural areas ----
+Abitare |> 
+  drop_na(abInd) |> 
+  filter(zon == 'Area Rurale') |> 
+  select(abQual, abCost, abPriv, abVic, abColl) |> 
+  pivot_longer(c(abQual, abCost, abPriv, abVic, abColl), names_to = 'abSodd', values_to = 'value') |> 
+  mutate(abInd = (value-1)/3 * 100) |> 
+  group_by(abSodd) |> 
+  summarise(abInd = mean(abInd)) |> 
+  mutate(abSodd = case_match(abSodd,
+                             'abQual'  ~ 'Qualità dell\'immobile (luminosità, dimensioni, riscaldamento)',
+                             'abCost'  ~ 'Costi da sostenere (per te o la tua famiglia)',
+                             'abPriv'  ~ 'Privacy garantita',
+                             'abVic'   ~ 'Vicinanza al centro/ai tuoi interessi',
+                             'abColl'  ~ 'Collegamento a zone di interesse con servizio di mobilità pubblica'
+  )) |> 
+  ggplot(aes(x = reorder(abSodd, -abInd), y = abInd, fill = abInd)) +
+  scale_fill_gradient2(high = '#EFD953', mid = '#EFD953',  midpoint = 70, low = '#EF7D4D') +
+  coord_flip() +
+  scale_y_continuous(limits = c(0, 80)) +
+  geom_col(width = .3, show.legend = F) +
+  theme_minimal() +
+  theme(axis.title = element_blank())
+
+ggsave('img/abSoddRur.pdf', width = 8, height = 3)
+
 
 ### Index by urban zone - over occ
 abPlotDem <- left_join(Lavorare |> 

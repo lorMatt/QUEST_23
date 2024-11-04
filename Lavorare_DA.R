@@ -76,6 +76,7 @@ ggsave('img/riscLav.pdf', width = 7, height = 5)
 ## Ambitions
 Lavorare |> 
   count(aspiraz) |> 
+  mutate(n = n/nrow(Lavorare) * 100) |> 
   arrange(n) |> 
   ggplot(aes(y= reorder(aspiraz, n), x = n)) +
   geom_col() +
